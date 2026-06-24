@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Menus RS de La Jarrie</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root {
+  --green:#6f9d2f;
+  --dark:#263238;
+  --light:#f7f9f4;
+  --border:#d8dfcf;
+  --pink:#b04b9b;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  color:var(--dark);
+  background:#fbfbf8;
+}
+header {
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:white;
+  border-bottom:1px solid var(--border);
+  padding:1rem;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.wrap { max-width:1180px; margin:auto; }
+h1 { margin:.2rem 0; color:var(--green); }
+.burger {
+  margin-top:.75rem;
+  display:inline-flex;
+  gap:.5rem;
+  align-items:center;
+  padding:.6rem .85rem;
+  border:1px solid var(--green);
+  border-radius:.55rem;
+  background:var(--green);
+  color:white;
+  font-weight:bold;
+}
+.menu-panel {
+  margin-top:.75rem;
+  padding:.8rem;
+  border:1px solid var(--border);
+  border-radius:.8rem;
+  background:var(--light);
+}
+.menu-panel[hidden] {
+  display:none;
+}
+.controls {
+  display:flex;
+  gap:.75rem;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top:.25rem;
+}
+input, button, select {
+  font:inherit;
+  padding:.55rem .7rem;
+  border:1px solid var(--border);
+  border-radius:.5rem;
+  background:white;
+}
+button {
+  cursor:pointer;
+  background:var(--green);
+  color:white;
+  border-color:var(--green);
+}
+main { max-width:1180px; margin:1.25rem auto; padding:0 1rem 2rem; }
+.info {
+  padding:1rem;
+  background:var(--light);
+  border:1px solid var(--border);
+  border-radius:.8rem;
+  margin-bottom:1rem;
+}
+.week {
+  margin:1.25rem 0;
+  padding:1rem;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:1rem;
+}
+.week.hidden { display:none; }
+.week h2 { margin:.2rem 0 1rem; color:var(--green); }
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:.8rem;
+}
+.day {
+  border:1px solid var(--border);
+  border-radius:.8rem;
+  padding:.8rem;
+  background:#fff;
+}
+.day.today {
+  outline:3px solid var(--pink);
+  background:#fff8fd;
+}
+.day.selected {
+  outline:3px solid var(--green);
+}
+.day h3 {
+  margin:.1rem 0 .5rem;
+  color:#333;
+}
+.badge {
+  display:inline-block;
+  margin:.15rem 0 .5rem;
+  padding:.2rem .45rem;
+  border-radius:999px;
+  background:#f2e4f0;
+  color:#87377a;
+  font-size:.85rem;
+  font-weight:bold;
+}
+.section-title {
+  margin:.7rem 0 .2rem;
+  font-weight:bold;
+  color:var(--green);
+}
+ul {
+  margin:.2rem 0 .4rem 1.1rem;
+  padding:0;
+}
+li { margin:.15rem 0; }
+.footer {
+  margin-top:1.5rem;
+  font-size:.92rem;
+  color:#4f5b45;
+}
+mark {
+  background:#e6f2d2;
+  padding:.05rem .2rem;
+  border-radius:.2rem;
+}
+@media (max-width:650px) {
+  .controls { flex-direction:column; align-items:stretch; }
+  .controls label, .controls input, .controls button { width:100%; }
+}
+@media print {
+  header { position:static; box-shadow:none; }
+  button, .controls, .burger, .menu-panel { display:none; }
+  .week.hidden { display:block; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>RS de La Jarrie — Menus 2026</h1>
+    <button id="menuToggle" class="burger" type="button" aria-expanded="false" aria-controls="menuPanel">
+      <span aria-hidden="true">☰</span>
+      <span>Menu</span>
+    </button>
+
+    <nav id="menuPanel" class="menu-panel" aria-label="Options d’affichage" hidden>
+      <div class="controls">
+        <label for="datePicker">Date affichée :</label>
+        <input type="date" id="datePicker">
+        <button id="prevWeekBtn" type="button">← Semaine précédente</button>
+        <button id="todayBtn" type="button">Aujourd’hui</button>
+        <button id="nextWeekBtn" type="button">Semaine suivante →</button>
+        <button id="allBtn" type="button">Voir toutes les semaines</button>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="info" id="summary"></div>
+  <div id="menus"></div>
+  <div class="footer">
+    <p><strong>Légende :</strong> BIO = produits biologiques ; LOCAL = produits régionaux ; MSC, HVE, AOP, VBF = produits labellisés.</p>
+    <p>Menus susceptibles de variations, sous réserve des approvisionnements.</p>
+  </div>
+</main>
+
+<script>
+const menus = [{"periode": "Menu du Lundi 1 septembre au Vendredi 5 septembre 2025", "start": "2025-09-01", "end": "2025-09-05", "jours": [{"date": "2025-09-01", "jour": "Lundi 1 septembre", "entrees": [], "plat": "Bolognaise", "accompagnement": "Spaghetti BIO", "fromage": "Brie", "desserts": ["Fruit BIO de saison", "Éclair au chocolat"]}, {"date": "2025-09-02", "jour": "Mardi 2 septembre", "entrees": ["Tomates BIO", "Friand au fromage"], "plat": "Chipolatas aux herbes", "accompagnement": "Courgettes BIO braisées", "fromage": "", "desserts": ["Roulé à la confiture de fraises"]}, {"date": "2025-09-03", "jour": "Mercredi 3 septembre", "entrees": ["Pâté de campagne, Cornichons"], "plat": "Sauce barbecue, Steak / haché", "accompagnement": "Haricots verts à l'ail", "fromage": "Camembert", "desserts": ["Compote de pommes du", "chef"]}, {"date": "2025-09-04", "jour": "Jeudi 4 septembre", "entrees": ["Melon", "Courgettes râpées à la feta", "AOP"], "plat": "Filet de hoki MSC, Sauce créole", "accompagnement": "Carottes BIO braisées", "fromage": "", "desserts": ["Clafoutis aux abricots du", "chef"]}, {"date": "2025-09-05", "jour": "Vendredi 5 septembre", "entrees": [], "plat": "Dahl de lentilles vertes BIO", "accompagnement": "Blé BIO nature", "fromage": "Chèvre BIO", "desserts": ["Pot de glace vanille-fraise", "Fruit BIO de saison"]}]}, {"periode": "Menu du Lundi 8 septembre au Vendredi 12 septembre 2025", "start": "2025-09-08", "end": "2025-09-12", "jours": [{"date": "2025-09-08", "jour": "Lundi 8 septembre", "entrees": ["Mousse de foie, Cornichons", "Chiffonnade de salade verte", "et croûtons, Vinaigrette"], "plat": "Sauté de poulet aux olives", "accompagnement": "Purée de courgettes BIO", "fromage": "", "desserts": ["Fromage blanc BIO à la", "cassonade"]}, {"date": "2025-09-09", "jour": "Mardi 9 septembre", "entrees": [], "plat": "Rôti de porc, Jus lié viande", "accompagnement": "Ratatouille du chef", "fromage": "Emmental", "desserts": ["Crème dessert à la vanille", "du chef", "Fruit BIO de saison"]}, {"date": "2025-09-10", "jour": "Mercredi 10 septembre", "entrees": ["Tomates BIO"], "plat": "Cordon bleu de dinde", "accompagnement": "Pommes de terre / boulangère", "fromage": "Camembert", "desserts": ["Liégeois au chocolat"]}, {"date": "2025-09-11", "jour": "Jeudi 11 septembre", "entrees": [], "plat": "Sauce arrabiata aux pois / chiche", "accompagnement": "Coquillettes BIO", "fromage": "Saint Paulin", "desserts": ["Compote de pommes et", "banane du chef", "Riz au lait"]}, {"date": "2025-09-12", "jour": "Vendredi 12 septembre", "entrees": ["Taboulé (semoule HVE)", "Pastèque BIO"], "plat": "Poisson frais du moment", "accompagnement": "Riz BIO", "fromage": "", "desserts": ["Quatre quart du chef"]}]}, {"periode": "Menu du Lundi 15 septembre au Vendredi 19 septembre 2025", "start": "2025-09-15", "end": "2025-09-19", "jours": [{"date": "2025-09-15", "jour": "Lundi 15 septembre", "entrees": [], "plat": "Pilon de poulet mariné à l'orange", "accompagnement": "Choux fleurs BIO gratinés / Mimolette", "fromage": "Fruit BIO de saison", "desserts": ["Compote de pêches"]}, {"date": "2025-09-16", "jour": "Mardi 16 septembre", "entrees": ["Melon", "Salade verte aux dés de gouda, Vinaigrette"], "plat": "Paella végétarienne", "accompagnement": "", "fromage": "Mousse aux framboises du", "desserts": ["chef"]}, {"date": "2025-09-17", "jour": "Mercredi 17 septembre", "entrees": ["Radis émincés à la crème de", "menthe"], "plat": "Quiche aux poireaux", "accompagnement": "Blé BIO aux oignons / Bûchette au lait mélange", "fromage": "", "desserts": ["Salade de fruits du chef"]}, {"date": "2025-09-18", "jour": "Jeudi 18 septembre", "entrees": ["Friand au fromage", "Tomates BIO"], "plat": "Fricassé de porc aux olives", "accompagnement": "Haricots verts BIO", "fromage": "Fromage blanc à la", "desserts": ["cassonade"]}, {"date": "2025-09-19", "jour": "Vendredi 19 septembre", "entrees": [], "plat": "Carbonara de saumon MSC", "accompagnement": "Tortis BIO / Brie", "fromage": "Fruit BIO de saison", "desserts": ["Tarte fine aux pommes BIO"]}]}, {"periode": "Menu du Lundi 22 septembre au Vendredi 26 septembre 2025", "start": "2025-09-22", "end": "2025-09-26", "jours": [{"date": "2025-09-22", "jour": "Lundi 22 septembre", "entrees": ["Concombres BIO", "Salade de coquillettes BIO", "sauce cocktail"], "plat": "Omelette fromagère", "accompagnement": "Pommes de terre rissolées", "fromage": "", "desserts": ["Yaourt aromatisé LOCAL"]}, {"date": "2025-09-23", "jour": "Mardi 23 septembre", "entrees": [], "plat": "Tajine de poulet aux abricots", "accompagnement": "Semoule BIO", "fromage": "Tomme blanche", "desserts": ["Ile flottante et crème", "anglaise", "Fruit BIO de saison"]}, {"date": "2025-09-24", "jour": "Mercredi 24 septembre", "entrees": ["Rillettes de sardines sur toast"], "plat": "Escalope Viennoise", "accompagnement": "Flan de courgettes", "fromage": "Camembert", "desserts": ["Fruit BIO de saison"]}, {"date": "2025-09-25", "jour": "Jeudi 25 septembre", "entrees": [], "plat": "Hachis Parmentier du chef", "accompagnement": "Chiffonnade de salade verte / BIO", "fromage": "Emmental", "desserts": ["Crème dessert au chocolat", "Fromage blanc BIO à la", "cassonade"]}, {"date": "2025-09-26", "jour": "Vendredi 26 septembre", "entrees": ["Toast au chèvre", "Pastèque BIO"], "plat": "Filet de merlu MSC, Sauce / crevettes", "accompagnement": "Carottes BIO façon Vichy", "fromage": "", "desserts": ["Tourteau fromager"]}]}, {"periode": "Menu du Lundi 29 septembre au Vendredi 3 octobre 2025", "start": "2025-09-29", "end": "2025-10-03", "jours": [{"date": "2025-09-29", "jour": "Lundi 29 septembre", "entrees": [], "plat": "Sauté de porc au curry", "accompagnement": "", "fromage": "Frites", "desserts": ["Cantal AOP", "Fruit BIO de saison", "Éclair à la vanille"]}, {"date": "2025-09-30", "jour": "Mardi 30 septembre", "entrees": ["Salade de pommes de terre,", "cornichons et persil, Vinaigrette Radis, Beurre"], "plat": "Pizza aux trois fromages", "accompagnement": "Chiffonnade de salade verte", "fromage": "BIO", "desserts": ["Cocktail de fruits"]}, {"date": "2025-10-01", "jour": "Mercredi 1 octobre", "entrees": ["Tomates BIO au basilic"], "plat": "Saucisse de Toulouse", "accompagnement": "", "fromage": "Carottes BIO braisées", "desserts": ["Tomme blanche", "Panna cotta du chef à la", "vanille"]}, {"date": "2025-10-02", "jour": "Jeudi 2 octobre", "entrees": ["Chiffonnade de salade verte", "BIO aux croûtons", "Endives aux pommes,"], "plat": "Vinaigrette / Lasagne Bolognaise du chef au", "accompagnement": "boeuf BIO", "fromage": "", "desserts": ["Compote de pommes BIO", "du chef"]}, {"date": "2025-10-03", "jour": "Vendredi 3 octobre", "entrees": [], "plat": "Gratiné de la mer au colin MSC", "accompagnement": "", "fromage": "Purée de patates douces", "desserts": ["Buchette de Chèvre", "Fruit BIO de saison", "Cake au citron"]}]}, {"periode": "Menu du Lundi 6 octobre au Vendredi 10 octobre 2025", "start": "2025-10-06", "end": "2025-10-10", "jours": [{"date": "2025-10-06", "jour": "Lundi 6 octobre", "entrees": ["Salade de perles de pâtes au", "surimi MSC", "Carottes BIO râpées au"], "plat": "citron / Pilon de poulet rôti mariné, Jus", "accompagnement": "de viande lié aux herbes", "fromage": "Pommes de terre sautées", "desserts": ["Ananas frais"]}, {"date": "2025-10-07", "jour": "Mardi 7 octobre", "entrees": [], "plat": "Moussaka", "accompagnement": "Chiffonnade de salade verte", "fromage": "BIO", "desserts": ["Emmental", "Pot de glace"]}, {"date": "2025-10-08", "jour": "Mercredi 8 octobre", "entrees": ["Concombres BIO"], "plat": "Bruschetta au jambon et à", "accompagnement": "la mozzarella / Chiffonnade de salade verte", "fromage": "BIO", "desserts": ["Saint Paulin", "Fruit BIO de saison"]}, {"date": "2025-10-09", "jour": "Jeudi 9 octobre", "entrees": [], "plat": "Sauce aux 3 fromages", "accompagnement": "", "fromage": "Tortis BIO", "desserts": ["Gouda", "Cake marbré au chocolat du", "chef"]}, {"date": "2025-10-10", "jour": "Vendredi 10 octobre", "entrees": ["Saucisson sec, Cornichons", "Salade de mâche, jambon,", "emmental (sauce à associer)"], "plat": "Colin MSC meunière", "accompagnement": "Fondue d'épinards BIO à la", "fromage": "crème", "desserts": ["Yaourt aromatisé LOCAL"]}]}, {"periode": "Menu du Lundi 13 octobre au Vendredi 17 octobre 2025", "start": "2025-10-13", "end": "2025-10-17", "jours": [{"date": "2025-10-13", "jour": "Lundi 13 octobre", "entrees": [], "plat": "Quiche au fromage du chef", "accompagnement": "Chiffonnade de salade verte / BIO", "fromage": "Saint Paulin", "desserts": ["Fruit BIO de saison", "Semoule au lait au chocolat"]}, {"date": "2025-10-14", "jour": "Mardi 14 octobre", "entrees": ["Ile flottante et son crémeux", "à la carotte", "Crêpe au fromage"], "plat": "Chili sin carne pois BIO", "accompagnement": "Riz BIO", "fromage": "", "desserts": ["Flan nappé au caramel"]}, {"date": "2025-10-15", "jour": "Mercredi 15 octobre", "entrees": ["Betteraves BIO au maïs"], "plat": "Jambon braisé", "accompagnement": "Purée de pommes de terre", "fromage": "Gouda", "desserts": ["Mousse au chocolat du chef"]}, {"date": "2025-10-16", "jour": "Jeudi 16 octobre", "entrees": [], "plat": "Sauté de bœuf aux olives", "accompagnement": "Doigt de sorcière aux / amandes", "fromage": "Brie", "desserts": ["Petit fantôme craquant", "Fruit BIO de saison"]}, {"date": "2025-10-17", "jour": "Vendredi 17 octobre", "entrees": ["Chou chantilly salé au jambon Salade BIO aux lardons"], "plat": "Filet de colin MSC, sauce à / l'aneth", "accompagnement": "Haricots verts BIO", "fromage": "", "desserts": ["Pâtisserie du Chef"]}]}, {"periode": "Menu du Lundi 3 novembre au Vendredi 7 novembre 2025", "start": "2025-11-03", "end": "2025-11-07", "jours": [{"date": "2025-11-03", "jour": "Lundi 3 novembre", "entrees": [], "plat": "Sauce Carbonara", "accompagnement": "Macaronis BIO", "fromage": "Brie", "desserts": ["Compote de pommes BIO", "du chef", "Fruit BIO de saison"]}, {"date": "2025-11-04", "jour": "Mardi 4 novembre", "entrees": ["Potage aux légumes BIO"], "plat": "Chili con carne", "accompagnement": "Riz BIO", "fromage": "", "desserts": ["Mousse au chocolat du chef", "Fruit BIO de saison"]}, {"date": "2025-11-05", "jour": "Mercredi 5 novembre", "entrees": ["Céleri rave sauce rémoulade"], "plat": "Sauté de porc à la moutarde", "accompagnement": "Haricots verts BIO", "fromage": "Bûchette au lait mélange", "desserts": ["Fromage blanc à la", "confiture"]}, {"date": "2025-11-06", "jour": "Jeudi 6 novembre", "entrees": [], "plat": "Pomme de terre au four gratinée à la raclette", "accompagnement": "Carottes BIO braisées", "fromage": "Saint Paulin", "desserts": ["Fruit BIO de saison", "Yaourt aromatisé LOCAL"], "theme": "Végétarien"}, {"date": "2025-11-07", "jour": "Vendredi 7 novembre", "entrees": ["Salade de coquillettes BIO", "sauce cocktail", "Saucisson à l'ail"], "plat": "Poisson frais du moment, / Sauce au citron", "accompagnement": "Brocolis BIO gratinés", "fromage": "", "desserts": ["Cheesecake spéculoos et", "chocolat"]}]}, {"periode": "Menu du Lundi 10 novembre au Vendredi 14 novembre 2025", "start": "2025-11-10", "end": "2025-11-14", "jours": [{"date": "2025-11-10", "jour": "Lundi 10 novembre", "entrees": ["Velouté de butternut", "Pilon de poulet rôti aux herbes"], "plat": "Haricots beurre persillés", "accompagnement": "", "fromage": "Yaourt aux fruits", "desserts": []}, {"date": "2025-11-12", "jour": "Mercredi 12 novembre", "entrees": ["Radis noir BIO râpé", "Bolognaise végétale aux"], "plat": "légumineuses / Torsade BIO", "accompagnement": "Camembert", "fromage": "Fruit BIO de saison", "desserts": [], "theme": "Végétarien"}, {"date": "2025-11-13", "jour": "Jeudi 13 novembre", "entrees": ["Brandade de colin MSC"], "plat": "Salade verte, Vinaigrette", "accompagnement": "Cantal AOP", "fromage": "Fruit BIO de saison / Liégeois au chocolat", "desserts": []}, {"date": "2025-11-14", "jour": "Vendredi 14 novembre", "entrees": ["Carottes râpées au jus d'agrumes", "Boulettes au bœuf à l'orientale"], "plat": "Semoule BIO", "accompagnement": "", "fromage": "", "desserts": [], "theme": "Maghreb"}]}, {"periode": "Menu du Lundi 17 novembre au Vendredi 21 novembre 2025", "start": "2025-11-17", "end": "2025-11-21", "jours": [{"date": "2025-11-17", "jour": "Lundi 17 novembre", "entrees": [], "plat": "Curry végétarien à", "accompagnement": "l'Indienne", "fromage": "Riz BIO", "desserts": ["Mimolette", "Fruit BIO de saison", "Compote de poires"], "theme": "Végétarien"}, {"date": "2025-11-18", "jour": "Mardi 18 novembre", "entrees": ["Rosette lyonnaise et cornichons Œuf dur BIO mayonnaise"], "plat": "Pot au feu", "accompagnement": "", "fromage": "", "desserts": ["Fruit BIO de saison"]}, {"date": "2025-11-19", "jour": "Mercredi 19 novembre", "entrees": ["Potage aux légumes BIO"], "plat": "Sauté de poulet au curry", "accompagnement": "", "fromage": "Chou fleur gratiné", "desserts": ["Buchette de Chèvre", "Cocktail de fruits"]}, {"date": "2025-11-20", "jour": "Jeudi 20 novembre", "entrees": ["Chiffonnade de salade verte BIO fromagère", "Houmous du chef et ses"], "plat": "croutons / Rôti de porc, Jus lié thym et", "accompagnement": "citron / Rata de légumes Hivernale", "fromage": "du chef", "desserts": ["Yaourt aromatisé LOCAL"]}, {"date": "2025-11-21", "jour": "Vendredi 21 novembre", "entrees": [], "plat": "Carbonara de saumon MSC", "accompagnement": "", "fromage": "Coquillettes BIO", "desserts": ["Gouda", "Ananas frais", "Brownie au chocolat"]}]}, {"periode": "Menu du Lundi 24 novembre au Vendredi 28 novembre 2025", "start": "2025-11-24", "end": "2025-11-28", "jours": [{"date": "2025-11-24", "jour": "Lundi 24 novembre", "entrees": ["Macédoine de légumes au", "fromage blanc et au curry", "Pamplemousse"], "plat": "Filet de merlu MSC, Sauce à la crème", "accompagnement": "Riz BIO", "fromage": "", "desserts": ["Fruit BIO de saison"]}, {"date": "2025-11-25", "jour": "Mardi 25 novembre", "entrees": [], "plat": "Quiche au fromage du chef", "accompagnement": "Chiffonnade de salade verte / BIO", "fromage": "Cantal AOP", "desserts": ["Crème dessert au chocolat", "du chef", "Fruit BIO de saison"], "theme": "Végétarien"}, {"date": "2025-11-26", "jour": "Mercredi 26 novembre", "entrees": ["Chou blanc râpé, Vinaigrette"], "plat": "Pilon de poulet tex mex", "accompagnement": "Polenta crémeuse nature", "fromage": "Camembert", "desserts": ["Cookie du chef"]}, {"date": "2025-11-27", "jour": "Jeudi 27 novembre", "entrees": [], "plat": "Jambon braisé", "accompagnement": "Frites", "fromage": "Emmental", "desserts": ["Fruit BIO de saison", "Cocktail de fruits"]}, {"date": "2025-11-28", "jour": "Vendredi 28 novembre", "entrees": ["Salade de riz et maïs,", "Vinaigrette", "Carottes BIO râpées au citron"], "plat": "Chipolatas aux herbes", "accompagnement": "Brocolis BIO poêlés", "fromage": "", "desserts": ["Pain perdu caramélisé du", "Chef"]}]}, {"periode": "Menu du Lundi 1 décembre au Vendredi 5 décembre 2025", "start": "2025-12-01", "end": "2025-12-05", "jours": [{"date": "2025-12-01", "jour": "Lundi 1 décembre", "entrees": [], "plat": "", "accompagnement": "Tartiflette aux pommes de terre", "fromage": "Chiffonnade de salade verte / BIO", "desserts": ["Fruit BIO de saison", "Compote de pommes BIO"]}, {"date": "2025-12-02", "jour": "Mardi 2 décembre", "entrees": ["Velouté aux carottes BIO"], "plat": "Parmentier de lentilles BIO", "accompagnement": "à la tomate", "fromage": "Purée de potiron", "desserts": ["Mimolette", "Crème dessert à la vanille"], "theme": "Végétarien"}, {"date": "2025-12-03", "jour": "Mercredi 3 décembre", "entrees": ["Taboulé d'Hiver, semoule", "BIO"], "plat": "Escalope de porc, Sauce miel", "accompagnement": "moutarde", "fromage": "Carottes BIO braisées", "desserts": ["Tomme blanche", "Gâteau au yaourt du chef"]}, {"date": "2025-12-04", "jour": "Jeudi 4 décembre", "entrees": [], "plat": "Pasta party bolognaise au boeuf", "accompagnement": "BIO", "fromage": "Coquillettes BIO", "desserts": ["Comté AOP", "Fruit BIO de saison"]}, {"date": "2025-12-05", "jour": "Vendredi 5 décembre", "entrees": ["Salade de blé et maïs,", "Vinaigrette", "Salade aux lentilles Bio et"], "plat": "aux noix", "accompagnement": "Calamars à la romaine", "fromage": "Haricots verts BIO", "desserts": ["Yaourt aromatisé LOCAL"]}]}, {"periode": "Menu du Lundi 8 décembre au Vendredi 12 décembre 2025", "start": "2025-12-08", "end": "2025-12-12", "jours": [{"date": "2025-12-08", "jour": "Lundi 8 décembre", "entrees": ["Potage aux légumes BIO"], "plat": "Escalope Viennoise", "accompagnement": "Lentilles vertes BIO", "fromage": "", "desserts": ["Fruit BIO de saison"]}, {"date": "2025-12-09", "jour": "Mardi 9 décembre", "entrees": [], "plat": "Croque monsieur au chèvre / et à l'emmental du chef", "accompagnement": "Chiffonnade de salade verte", "fromage": "BIO / Gouda", "desserts": ["Compote de poires", "Tiramisu au spéculoos"], "theme": "Végétarien"}, {"date": "2025-12-10", "jour": "Mercredi 10 décembre", "entrees": ["Chou rouge aux pommes,", "Vinaigrette"], "plat": "Chili chicken", "accompagnement": "Blé BIO à la tomate", "fromage": "Tomme noire", "desserts": ["Œufs au lait"]}, {"date": "2025-12-11", "jour": "Jeudi 11 décembre", "entrees": [], "plat": "Saucisse de Toulouse", "accompagnement": "Frites", "fromage": "Buchette de Chèvre", "desserts": ["Fruit BIO de saison", "Flan au caramel"]}, {"date": "2025-12-12", "jour": "Vendredi 12 décembre", "entrees": ["Pâté de campagne, Cornichons", "Chiffonnade de salade verte", "et croûtons, Vinaigrette"], "plat": "Pêche du moment MSC, Sauce / tartare", "accompagnement": "Épinard BIO à la béchamel", "fromage": "", "desserts": ["Tarte au sucre du chef"]}]}, {"periode": "Menu du Lundi 15 décembre au Vendredi 19 décembre 2025", "start": "2025-12-15", "end": "2025-12-19", "jours": [{"date": "2025-12-15", "jour": "Lundi 15 décembre", "entrees": ["Crème de potiron à l'orange"], "plat": "Pizza aux trois fromages, / Salade verte, Vinaigrette", "accompagnement": "Chiffonnade de salade verte / BIO", "fromage": "", "desserts": ["Crème dessert à la vanille"], "theme": "Végétarien"}, {"date": "2025-12-16", "jour": "Mardi 16 décembre", "entrees": [], "plat": "Risotto de chorizo, parmesan / AOP", "accompagnement": "", "fromage": "St Moret", "desserts": ["Fruit BIO de saison", "Fromage blanc à la", "confiture"]}, {"date": "2025-12-17", "jour": "Mercredi 17 décembre", "entrees": ["Œuf dur"], "plat": "Filet de lieu MSC, Sauce à / l'échalote", "accompagnement": "Haricots verts BIO", "fromage": "Gouda", "desserts": ["Yaourt aromatisé"]}, {"date": "2025-12-18", "jour": "Jeudi 18 décembre", "entrees": ["Rillettes de saumon sur", "tartelette salée"], "plat": "Jambons laqués au miel", "accompagnement": "Pomme duchesse", "fromage": "", "desserts": ["Clémentine", "Bûchette glacée framboise, fruit exotique"], "theme": "Noël"}, {"date": "2025-12-19", "jour": "Vendredi 19 décembre", "entrees": [], "plat": "Merguez, Sauce aux épices", "accompagnement": "Poêlée de carottes BIO et / butternut", "fromage": "Emmental", "desserts": ["Fruit BIO de saison", "Liégeois au chocolat"]}]}, {"periode": "Menu du Lundi 5 janvier au Vendredi 9 janvier 2026", "start": "2026-01-05", "end": "2026-01-09", "jours": [{"date": "2026-01-05", "jour": "Lundi 5 janvier", "entrees": [], "plat": "", "accompagnement": "Cordon bleu de dinde", "fromage": "Petits pois BIO au jus", "desserts": ["Tomme noire", "Fruit BIO de saison", "Crème dessert au chocolat du"]}, {"date": "2026-01-06", "jour": "Mardi 6 janvier", "entrees": ["Endives aux noix,", "Vinaigrette", "Carottes BIO râpées au"], "plat": "citron", "accompagnement": "Cassoulet", "fromage": "", "desserts": ["Galette des rois frangipane"]}, {"date": "2026-01-07", "jour": "Mercredi 7 janvier", "entrees": ["Céleri rave en rémoulade au", "curry"], "plat": "", "accompagnement": "Émincé de dinde", "fromage": "Semoule BIO", "desserts": ["Chèvre BIO", "Rocher coco du chef"]}, {"date": "2026-01-08", "jour": "Jeudi 8 janvier", "entrees": ["Velouté de potiron"], "plat": "", "accompagnement": "Gratiné de la mer au colin MSC", "fromage": "Choux fleurs BIO gratinés", "desserts": ["Compote de pommes BIO"]}, {"date": "2026-01-09", "jour": "Vendredi 9 janvier", "entrees": [], "plat": "Quiche aux poireaux du", "accompagnement": "chef", "fromage": "Blé BIO aux oignons / Yaourt local au lait fermier", "desserts": ["sucré BIO", "Fruit BIO de saison"], "theme": "Végétarien"}]}, {"periode": "Menu du Lundi 12 janvier au Vendredi 16 janvier 2026", "start": "2026-01-12", "end": "2026-01-16", "jours": [{"date": "2026-01-12", "jour": "Lundi 12 janvier", "entrees": ["Potage Brighton"], "plat": "Boudin blanc aux champignons", "accompagnement": "Potatoes au paprika", "fromage": "", "desserts": ["Crumble aux pommes,", "poires et spéculoos"]}, {"date": "2026-01-13", "jour": "Mardi 13 janvier", "entrees": [], "plat": "Rôti de porc, Jus lié viande", "accompagnement": "Haricots beurre à l'ail", "fromage": "Édam", "desserts": ["Fruit BIO de saison", "Compote de poires"]}, {"date": "2026-01-14", "jour": "Mercredi 14 janvier", "entrees": ["Endives aux pommes,", "Vinaigrette"], "plat": "Pasta party bolognaise au boeuf BIO", "accompagnement": "Tortis BIO", "fromage": "Camembert", "desserts": ["Fruit BIO de saison"]}, {"date": "2026-01-15", "jour": "Jeudi 15 janvier", "entrees": [], "plat": "Parmentier de patates / douces et lentilles corail", "accompagnement": "Chiffonnade de salade verte", "fromage": "BIO / St Moret", "desserts": ["Yaourt aux fruits LOCAL"], "theme": "Végétarien"}, {"date": "2026-01-16", "jour": "Vendredi 16 janvier", "entrees": ["Radis noir râpé sauce", "rémoulade", "Champignons à la crème"], "plat": "Pêche du moment MSC, Sauce / aux herbes", "accompagnement": "Pommes de terre persillées", "fromage": "", "desserts": ["Galette des rois frangipane"]}]}, {"periode": "Menu du Lundi 19 janvier au Vendredi 23 janvier 2026", "start": "2026-01-19", "end": "2026-01-23", "jours": [{"date": "2026-01-19", "jour": "Lundi 19 janvier", "entrees": [], "plat": "Pilon de poulet rôti aux herbes", "accompagnement": "Duo de carotte et panais / Bio poêlés", "fromage": "Mimolette", "desserts": ["Semoule au lait au chocolat", "Fruit BIO de saison"]}, {"date": "2026-01-20", "jour": "Mardi 20 janvier", "entrees": ["Potage aux légumes BIO"], "plat": "Pizza tomate mozzarella", "accompagnement": "Chiffonnade de salade verte / BIO", "fromage": "", "desserts": ["Panna cotta du chef à la", "vanille"], "theme": "Végétarien"}, {"date": "2026-01-21", "jour": "Mercredi 21 janvier", "entrees": ["Salade de pommes de terre,", "cornichons et persil, Vinaigrette"], "plat": "Saucisse de Toulouse", "accompagnement": "Carottes BIO braisées", "fromage": "Camembert BIO", "desserts": ["Fromage blanc au coulis de", "fruits rouges"]}, {"date": "2026-01-22", "jour": "Jeudi 22 janvier", "entrees": ["Rosette lyonnaise et cornichons Carottes BIO râpées au", "citron"], "plat": "Langue de boeuf", "accompagnement": "Coquillettes BIO", "fromage": "", "desserts": ["Mousseline vanille chocolat"]}, {"date": "2026-01-23", "jour": "Vendredi 23 janvier", "entrees": [], "plat": "Fish and chip's de colin MSC du chef", "accompagnement": "Frites", "fromage": "Suisse sucré", "desserts": ["Lassi banoffee du chef", "Fruit BIO de saison"], "theme": "Angleterre"}]}, {"periode": "Menu du Lundi 26 janvier au Vendredi 30 janvier 2026", "start": "2026-01-26", "end": "2026-01-30", "jours": [{"date": "2026-01-26", "jour": "Lundi 26 janvier", "entrees": ["Betteraves BIO", "Radis noir râpé, Vinaigrette"], "plat": "Couscous au poulet et merguez", "accompagnement": "Semoule BIO", "fromage": "", "desserts": ["Fruit BIO de saison"]}, {"date": "2026-01-27", "jour": "Mardi 27 janvier", "entrees": [], "plat": "Carbonara de saumon MSC", "accompagnement": "Tortis BIO", "fromage": "Tomme blanche", "desserts": ["Liégeois à la vanille", "Salade de fruits du chef"]}, {"date": "2026-01-28", "jour": "Mercredi 28 janvier", "entrees": ["Velouté aux carottes BIO"], "plat": "Frittata pommes de terre et / oignons", "accompagnement": "Potimarron rôti", "fromage": "Camembert", "desserts": ["Yaourt aromatisé"], "theme": "Végétarien"}, {"date": "2026-01-29", "jour": "Jeudi 29 janvier", "entrees": [], "plat": "Sauté de poulet aux olives", "accompagnement": "Haricots beurre à l'ail", "fromage": "Emmental", "desserts": ["Tarte chocolat et praliné", "Suisse aromatisé"]}, {"date": "2026-01-30", "jour": "Vendredi 30 janvier", "entrees": ["Salade aux lentilles Bio et", "aux noix", "Saucisson à l'ail, Cornichons"], "plat": "Croissant au jambon et fromage", "accompagnement": "Chiffonnade de salade verte", "fromage": "BIO", "desserts": ["Compote de pommes du", "chef"]}]}, {"periode": "Menu du Lundi 2 février au Vendredi 6 février 2026", "start": "2026-02-02", "end": "2026-02-06", "jours": [{"date": "2026-02-02", "jour": "Lundi 2 février", "entrees": ["Endives à la mimolette", "Carottes râpées BIO"], "plat": "Escalope Viennoise, Sauce / tomate", "accompagnement": "Flan au potiron", "fromage": "", "desserts": ["Crêpe du chef"]}, {"date": "2026-02-03", "jour": "Mardi 3 février", "entrees": [], "plat": "Tartiflette aux pommes de / terre", "accompagnement": "Chiffonnade de salade verte / BIO", "fromage": "Mimolette", "desserts": ["Fromage blanc BIO", "Fruit BIO de saison"]}, {"date": "2026-02-04", "jour": "Mercredi 4 février", "entrees": ["Rillettes de sardines sur toast"], "plat": "Quiche au chèvre", "accompagnement": "Endives braisées", "fromage": "Tomme blanche", "desserts": ["Fruit BIO de saison"], "theme": "Végétarien"}, {"date": "2026-02-05", "jour": "Jeudi 5 février", "entrees": [], "plat": "Fricassée de colin MSC gratiné", "accompagnement": "Purée de patates douces", "fromage": "Yaourt nature BIO", "desserts": ["Compote de pommes BIO", "du chef"]}, {"date": "2026-02-06", "jour": "Vendredi 6 février", "entrees": ["Velouté de lentilles corail", "BIO"], "plat": "Sauté de poulet au beurre de / cacahuète", "accompagnement": "Riz BIO", "fromage": "", "desserts": ["Le beignet chinois"], "theme": "Nouvel an chinois"}]}, {"periode": "Menu du Lundi 20 Avril au Vendredi 24 Avril 2026", "start": "2026-04-20", "end": "2026-04-24", "jours": [{"date": "2026-04-20", "jour": "Lundi 20 avril", "entrees": ["Carottes BIO râpées au citron", "Salade de haricots verts BIO"], "plat": "Sauce Carbonara", "accompagnement": "Pennes BIO", "fromage": "Fromage", "desserts": ["Pêches au sirop", "Fruit BIO de saison"]}, {"date": "2026-04-21", "jour": "Mardi 21 avril", "theme": "Végétarien", "entrees": [], "plat": "Omelette aux fines herbes", "accompagnement": "Frites", "fromage": "Saint Paulin", "desserts": ["Fruit BIO de saison", "Fromage blanc LOCAL nature"]}, {"date": "2026-04-22", "jour": "Mercredi 22 avril", "entrees": ["Céleri rave sauce rémoulade"], "plat": "Émincé de porc, sauce au curry et à la pomme", "accompagnement": "Haricots verts BIO", "fromage": "", "desserts": ["Crème aux œufs du chef"]}, {"date": "2026-04-23", "jour": "Jeudi 23 avril", "entrees": ["Tzatziki aux betteraves", "Salade de farfalle HVE, jambon et maïs"], "plat": "Colin MSC pané", "accompagnement": "Carottes BIO façon Vichy", "fromage": "", "desserts": ["Flan pâtissier nature du chef"]}, {"date": "2026-04-24", "jour": "Vendredi 24 avril", "entrees": [], "plat": "Sauté de poulet, sauce tex mex", "accompagnement": "Semoule BIO", "fromage": "Camembert", "desserts": ["Fruit BIO de saison", "Yaourt LOCAL sucré"]}]}, {"periode": "Menu du Lundi 27 Avril au Jeudi 30 Avril 2026", "start": "2026-04-27", "end": "2026-04-30", "jours": [{"date": "2026-04-27", "jour": "Lundi 27 avril", "entrees": ["Quinoa façon taboulé libanais", "Concombres BIO"], "plat": "Rougail de saucisses fumées", "accompagnement": "Riz BIO créole", "fromage": "", "desserts": ["Fruit BIO de saison"]}, {"date": "2026-04-28", "jour": "Mardi 28 avril", "theme": "Végétarien", "entrees": [], "plat": "Sauce tomate aux pois chiches et curry", "accompagnement": "Macaronis BIO", "fromage": "Tomme noire", "desserts": ["Île flottante du chef", "Compote de pommes BIO"]}, {"date": "2026-04-29", "jour": "Mercredi 29 avril", "entrees": ["Pâté de campagne, cornichons"], "plat": "Rôti de bœuf VBF à la texane", "accompagnement": "Choux-fleurs BIO", "fromage": "Édam", "desserts": ["Liégeois au chocolat du chef"]}, {"date": "2026-04-30", "jour": "Jeudi 30 avril", "entrees": ["Radis émincés à la crème de menthe", "Salade de riz et maïs, vinaigrette"], "plat": "Fricassée de colin MSC gratiné", "accompagnement": "Courgettes BIO braisées", "fromage": "", "desserts": ["Tourteau fromager"]}]}, {"periode": "Menu du Lundi 4 Mai au Jeudi 7 Mai 2026", "start": "2026-05-04", "end": "2026-05-07", "jours": [{"date": "2026-05-04", "jour": "Lundi 4 mai", "entrees": [], "plat": "Chipolatas", "accompagnement": "Haricots verts BIO", "fromage": "Brie", "desserts": ["Fruit BIO de saison", "Éclair au chocolat"]}, {"date": "2026-05-05", "jour": "Mardi 5 mai", "theme": "Végétarien", "entrees": ["Feuilleté au fromage du chef", "Œuf dur BIO mayonnaise"], "plat": "Falafels, sauce tomate", "accompagnement": "Semoule BIO", "fromage": "", "desserts": ["Fruit BIO de saison"]}, {"date": "2026-05-06", "jour": "Mercredi 6 mai", "entrees": ["Tomates BIO"], "plat": "Filet de hoki MSC, sauce au citron", "accompagnement": "Riz BIO", "fromage": "Bûchette au lait mélange", "desserts": ["Cake marbré au chocolat du chef"]}, {"date": "2026-05-07", "jour": "Jeudi 7 mai", "entrees": ["Concombres BIO", "Macédoine mayonnaise"], "plat": "Hachis Parmentier du chef au bœuf BIO", "accompagnement": "Chiffonnade de salade verte BIO", "fromage": "", "desserts": ["Crème aux œufs du chef"]}]}, {"periode": "Menu du Lundi 11 Mai au Mercredi 13 Mai 2026", "start": "2026-05-11", "end": "2026-05-13", "jours": [{"date": "2026-05-11", "jour": "Lundi 11 mai", "entrees": [], "plat": "Filet de merlu MSC, sauce crème", "accompagnement": "Poêlée italienne", "fromage": "Mimolette", "desserts": ["Fruit BIO de saison", "Donut"]}, {"date": "2026-05-12", "jour": "Mardi 12 mai", "entrees": ["Tomates BIO", "Salade de perles de pâtes à la mimolette, vinaigrette aux échalotes"], "plat": "Sauté de poulet au curry", "accompagnement": "Frites", "fromage": "", "desserts": ["Crème dessert à la vanille"]}, {"date": "2026-05-13", "jour": "Mercredi 13 mai", "theme": "Végétarien", "entrees": ["Betteraves BIO"], "plat": "Quiche au fromage du chef", "accompagnement": "Ratatouille du chef", "fromage": "Camembert", "desserts": ["Poire au coulis de framboises et amandes"]}]}, {"periode": "Menu du Lundi 18 Mai au Vendredi 22 Mai 2026", "start": "2026-05-18", "end": "2026-05-22", "jours": [{"date": "2026-05-18", "jour": "Lundi 18 mai", "entrees": [], "plat": "Escalope viennoise", "accompagnement": "Courgettes BIO braisées", "fromage": "Emmental", "desserts": ["Coupe à la banane et au chocolat", "Fruit BIO de saison"]}, {"date": "2026-05-19", "jour": "Mardi 19 mai", "theme": "Végétarien", "entrees": ["Tzatziki de concombre et toast", "Quinoa façon taboulé libanais"], "plat": "Paella végétarienne", "accompagnement": "Riz BIO", "fromage": "", "desserts": ["Yaourt LOCAL sucré"]}, {"date": "2026-05-20", "jour": "Mercredi 20 mai", "entrees": ["Gaspacho de tomates au basilic"], "plat": "Rôti de porc au miel et à la moutarde", "accompagnement": "Potatoes au paprika", "fromage": "Coulommiers", "desserts": ["Compote de pêches"]}, {"date": "2026-05-21", "jour": "Jeudi 21 mai", "entrees": [], "plat": "Bœuf à la tomate", "accompagnement": "Carottes BIO braisées", "fromage": "Suisse aromatisé", "desserts": ["Fruit BIO de saison", "Tarte au sucre du chef"]}, {"date": "2026-05-22", "jour": "Vendredi 22 mai", "entrees": ["Carottes BIO râpées au citron", "Courgette BIO râpée"], "plat": "Pêche du moment", "accompagnement": "Coquillettes BIO", "fromage": "", "desserts": ["Pot de glace à la vanille et au chocolat"]}]}, {"periode": "Menu du Mardi 26 Mai au Vendredi 29 Mai 2026", "start": "2026-05-26", "end": "2026-05-29", "jours": [{"date": "2026-05-26", "jour": "Mardi 26 mai", "entrees": ["Concombres BIO", "Pastèque"], "plat": "Salade alsacienne", "accompagnement": "Petits pois BIO au jus", "fromage": "", "desserts": ["Pot de glace"]}, {"date": "2026-05-27", "jour": "Mercredi 27 mai", "entrees": ["Taboulé (semoule HVE)"], "plat": "Colin MSC façon meunière", "accompagnement": "Blé BIO nature", "fromage": "Bûchette au lait mélange", "desserts": ["Fruit BIO de saison"]}, {"date": "2026-05-28", "jour": "Jeudi 28 mai", "theme": "Végétarien", "entrees": [], "plat": "Courgettes provençales, crumble aux amandes et parmesan AOP", "accompagnement": "Riz BIO nature", "fromage": "Assortiments de fromages", "desserts": ["Fruit BIO de saison", "Fromage blanc BIO nature"]}, {"date": "2026-05-29", "jour": "Vendredi 29 mai", "theme": "Italie", "entrees": ["Crostini au jambon sec et tomates séchées"], "plat": "Osso bucco de dinde", "accompagnement": "Tagliatelles", "fromage": "", "desserts": ["Tiramisu au spéculoos"]}]}, {"periode": "Menu du Lundi 1 Juin au Vendredi 5 Juin 2026", "start": "2026-06-01", "end": "2026-06-05", "jours": [{"date": "2026-06-01", "jour": "Lundi 1 juin", "theme": "Végétarien", "entrees": ["Melon", "Salade mexicaine"], "plat": "Curry de pois chiches, épinards et ananas", "accompagnement": "Semoule BIO", "fromage": "", "desserts": ["Bâtonnet de glace au chocolat"]}, {"date": "2026-06-02", "jour": "Mardi 2 juin", "entrees": [], "plat": "Émincé de bœuf thaï aux oignons", "accompagnement": "Riz BIO", "fromage": "Mimolette", "desserts": ["Fruit BIO de saison", "Île flottante du chef"]}, {"date": "2026-06-03", "jour": "Mercredi 3 juin", "entrees": ["Pastèque"], "plat": "Salade de coquillettes BIO, œuf, emmental, dés de tomates", "accompagnement": "Salade verte", "fromage": "Tomme blanche", "desserts": ["Crème dessert au chocolat"]}, {"date": "2026-06-04", "jour": "Jeudi 4 juin", "entrees": ["Tomates, vinaigrette", "Aubergines grillées et feta AOP"], "plat": "Cervelas Obernois", "accompagnement": "Ratatouille du chef", "fromage": "", "desserts": ["Compote de pommes BIO du chef"]}, {"date": "2026-06-05", "jour": "Vendredi 5 juin", "entrees": [], "plat": "Pêche du moment", "accompagnement": "Haricots beurre persillés", "fromage": "Emmental", "desserts": ["Fruit BIO de saison", "Abricots rôtis au miel"]}]}, {"periode": "Menu du Lundi 8 Juin au Vendredi 12 Juin 2026", "start": "2026-06-08", "end": "2026-06-12", "jours": [{"date": "2026-06-08", "jour": "Lundi 8 juin", "entrees": ["Mousse de foie"], "plat": "Chipolatas", "accompagnement": "Purée de petits pois BIO", "fromage": "Brie", "desserts": ["Fruit BIO de saison", "Liégeois au chocolat"]}, {"date": "2026-06-09", "jour": "Mardi 9 juin", "theme": "Végétarien", "entrees": ["Betteraves BIO mimosa"], "plat": "Pastasotto de courgette ail et fines herbes", "accompagnement": "Coquillettes BIO", "fromage": "", "desserts": ["Compote de pommes BIO du chef"]}, {"date": "2026-06-10", "jour": "Mercredi 10 juin", "entrees": ["Carotte BIO râpée à la pomme"], "plat": "Pizza reine", "accompagnement": "Salade verte", "fromage": "Saint Paulin", "desserts": ["Salade de fruits du chef"]}, {"date": "2026-06-11", "jour": "Jeudi 11 juin", "entrees": ["Tomates BIO", "Haricots verts BIO à l'échalote"], "plat": "Axoa de porc aux pruneaux d’Agen", "accompagnement": "Frites", "fromage": "", "desserts": ["Yaourt LOCAL aux fruits"]}, {"date": "2026-06-12", "jour": "Vendredi 12 juin", "entrees": [], "plat": "Calamars à la romaine, sauce provençale", "accompagnement": "Tian de légumes", "fromage": "Camembert", "desserts": ["Fruit BIO de saison", "Tarte aux spéculoos"]}]}, {"periode": "Menu du Lundi 15 Juin au Vendredi 19 Juin 2026", "start": "2026-06-15", "end": "2026-06-19", "jours": [{"date": "2026-06-15", "jour": "Lundi 15 juin", "entrees": ["Melon", "Crêpe au fromage"], "plat": "Gratiné de la mer au colin MSC", "accompagnement": "Carottes BIO braisées", "fromage": "Brie", "desserts": ["Pastèque BIO"]}, {"date": "2026-06-16", "jour": "Mardi 16 juin", "entrees": [], "plat": "Yassa de poulet", "accompagnement": "Pommes de terre sautées", "fromage": "", "desserts": ["Crème dessert à la vanille du chef", "Fruit BIO de saison"]}, {"date": "2026-06-17", "jour": "Mercredi 17 juin", "entrees": ["Pastèque"], "plat": "Nuggets au poisson", "accompagnement": "Gratin d’épinard", "fromage": "Tomme grise", "desserts": ["Mousse au fromage blanc"]}, {"date": "2026-06-18", "jour": "Jeudi 18 juin", "theme": "Végétarien", "entrees": [], "plat": "Lasagnes aux légumes", "accompagnement": "Chiffonnade de salade verte BIO", "fromage": "Gouda", "desserts": ["Compote de pommes BIO du chef", "Gâteau moelleux au citron"]}, {"date": "2026-06-19", "jour": "Vendredi 19 juin", "entrees": ["Œuf dur BIO mayonnaise", "Salade de pommes de terre au thon"], "plat": "Courgettes farcies du chef", "accompagnement": "Boulgour BIO", "fromage": "", "desserts": ["Pot de glace"]}]}, {"periode": "Menu du Lundi 22 Juin au Vendredi 26 Juin 2026", "start": "2026-06-22", "end": "2026-06-26", "jours": [{"date": "2026-06-22", "jour": "Lundi 22 juin", "theme": "Végétarien", "entrees": [], "plat": "Bolognaise végétale", "accompagnement": "Tortis BIO", "fromage": "Tomme noire", "desserts": ["Melon jaune", "Fromage blanc BIO à la vergeoise"]}, {"date": "2026-06-23", "jour": "Mardi 23 juin", "entrees": ["Carottes BIO râpées au citron", "Chiffonnade de salade verte et croûtons, vinaigrette"], "plat": "Moules marinières", "accompagnement": "Pommes de terre rissolées", "fromage": "", "desserts": ["Fruit BIO de saison"]}, {"date": "2026-06-24", "jour": "Mercredi 24 juin", "entrees": ["Radis, sel dosette"], "plat": "Jambon blanc", "accompagnement": "Haricots verts à l’ail", "fromage": "Bûchette au lait mélange", "desserts": ["Compote de pommes BIO du chef"]}, {"date": "2026-06-25", "jour": "Jeudi 25 juin", "entrees": ["Tomates BIO", "Courgette BIO râpée"], "plat": "Poulet basquaise", "accompagnement": "Piperade", "fromage": "", "desserts": ["Fraise façon Melba"]}, {"date": "2026-06-26", "jour": "Vendredi 26 juin", "theme": "Kermesse", "entrees": [], "plat": "Panini aux 2 fromages et pesto", "accompagnement": "Chips", "fromage": "", "desserts": ["Fruit BIO de saison", "Quatre-quarts du chef"]}]}, {"periode": "Menu du Lundi 29 Juin au Vendredi 3 Juillet 2026", "start": "2026-06-29", "end": "2026-07-03", "jours": [{"date": "2026-06-29", "jour": "Lundi 29 juin", "entrees": ["Salade de haricots verts BIO"], "plat": "Filet de merlu MSC, sauce ciboulette", "accompagnement": "Semoule HVE", "fromage": "Mimolette", "desserts": ["Fruit BIO de saison", "Mousse au fromage blanc"]}, {"date": "2026-06-30", "jour": "Mardi 30 juin", "theme": "Végétarien", "entrees": ["Salade de maïs et radis, vinaigrette"], "plat": "Croque tomate mozzarella", "accompagnement": "Achards aux légumes", "fromage": "", "desserts": ["Bâtonnet de glace au chocolat"]}, {"date": "2026-07-01", "jour": "Mercredi 1 juillet", "entrees": ["Salade de lentilles BIO à l’échalote"], "plat": "Quiche au poulet", "accompagnement": "Salade verte, vinaigrette", "fromage": "Camembert", "desserts": ["Panna cotta œil sanglant", "Panna cotta nature du chef"]}, {"date": "2026-07-02", "jour": "Jeudi 2 juillet", "entrees": [], "plat": "Cordon bleu de dinde", "accompagnement": "Courgettes BIO braisées", "fromage": "Fromage", "desserts": ["Rose des sables", "Fruit BIO de saison"]}, {"date": "2026-07-03", "jour": "Vendredi 3 juillet", "entrees": ["Toast fromage au chèvre", "Melon"], "plat": "Rôti de porc", "accompagnement": "Salade de perle HVE, mozzarella et basilic", "fromage": "", "desserts": ["Yaourt BIO à la vanille"]}]}, {"periode": "Menu du Lundi 6 Juillet au Vendredi 10 Juillet 2026", "start": "2026-07-06", "end": "2026-07-10", "jours": [{"date": "2026-07-06", "jour": "Lundi 6 juillet", "entrees": ["Betteraves bio vinaigrette à la moutarde à l'ancienne"], "plat": "Rougail de saucisses", "accompagnement": "Semoule bio", "fromage": "Brie", "desserts": ["Fruit de saison"]}, {"date": "2026-07-07", "jour": "Mardi 7 juillet", "entrees": ["Salade de riz"], "plat": "Jambon blanc", "accompagnement": "Haricots verts bio à l'ail", "fromage": "Vache qui rit", "desserts": ["Fruit de saison"]}, {"date": "2026-07-08", "jour": "Mercredi 8 juillet", "theme": "Végétarien", "entrees": ["Concombre, vinaigrette au fromage ail et fines herbes"], "plat": "Bolognaise de lentilles bio", "accompagnement": "Pennes bio", "fromage": "Emmental", "desserts": ["Compote fraîche pomme bio et framboise"]}, {"date": "2026-07-09", "jour": "Jeudi 9 juillet", "entrees": ["Pizza au fromage"], "plat": "Rôti de dinde et mayonnaise", "accompagnement": "Salade de pommes de terre, tomates, maïs, vinaigrette", "fromage": "Edam", "desserts": ["Fruit de saison"]}, {"date": "2026-07-10", "jour": "Vendredi 10 juillet", "entrees": ["Pastèque"], "plat": "Brandade de colin MSC à la purée de carottes", "accompagnement": "Salade Iceberg, vinaigrette persillée", "fromage": "Tomme noire IGP", "desserts": ["Clafoutis cerise"]}]}, {"periode": "Menu du Lundi 13 Juillet au Vendredi 17 Juillet 2026", "start": "2026-07-13", "end": "2026-07-17", "jours": [{"date": "2026-07-13", "jour": "Lundi 13 juillet", "entrees": ["Carottes râpées, vinaigrette"], "plat": "Émincé de cuisse de poulet sauce au thym", "accompagnement": "Petits pois bio", "fromage": "Mimolette", "desserts": ["Compote de pommes bio"]}, {"date": "2026-07-14", "jour": "Mardi 14 juillet", "theme": "Férié", "entrees": [], "plat": "", "accompagnement": "", "fromage": "", "desserts": []}, {"date": "2026-07-15", "jour": "Mercredi 15 juillet", "entrees": ["Taboulé estival (semoule bio)"], "plat": "Poisson blanc MSC meunière", "accompagnement": "Courgettes", "fromage": "Cantal AOP", "desserts": ["Fruit de saison"]}, {"date": "2026-07-16", "jour": "Jeudi 16 juillet", "entrees": ["Gaspacho"], "plat": "Paëlla au pilon de poulet", "accompagnement": "", "fromage": "Petit suisse", "desserts": ["Pâtisserie du chef"]}, {"date": "2026-07-17", "jour": "Vendredi 17 juillet", "entrees": ["Œuf dur mayonnaise"], "plat": "Salade de pâtes, pois chiches, maïs, tomates et concombres", "accompagnement": "/", "fromage": "Fromage", "desserts": ["Fruit de saison (banane bio)"]}]}, {"periode": "Menu du Lundi 20 Juillet au Vendredi 24 Juillet 2026", "start": "2026-07-20", "end": "2026-07-24", "jours": [{"date": "2026-07-20", "jour": "Lundi 20 juillet", "entrees": ["Concombre vinaigrette au fromage blanc et ciboulette"], "plat": "Sauté de dinde sauce chorizo", "accompagnement": "Blé pilaf", "fromage": "Camembert bio", "desserts": ["Flan au chocolat"]}, {"date": "2026-07-21", "jour": "Mardi 21 juillet", "theme": "Végétarien", "entrees": ["Salade de pommes de terre, maïs, vinaigrette au ketchup"], "plat": "Cake courgette feta", "accompagnement": "Haricots beurre persillés", "fromage": "Emmental", "desserts": ["Fruit de saison"]}, {"date": "2026-07-22", "jour": "Mercredi 22 juillet", "entrees": ["Melon jaune"], "plat": "Rôti de porc", "accompagnement": "Taboulé", "fromage": "Gouda bio", "desserts": ["Fruit de saison"]}, {"date": "2026-07-23", "jour": "Jeudi 23 juillet", "entrees": ["Mélange de coquillettes bio, tomates, maïs, vinaigrette"], "plat": "Cordon bleu de dinde", "accompagnement": "Ratatouille", "fromage": "Chèvre", "desserts": ["Fruit de saison"]}, {"date": "2026-07-24", "jour": "Vendredi 24 juillet", "entrees": ["Tomates, vinaigrette caesar"], "plat": "Filet de limande MSC sauce paprika", "accompagnement": "Riz bio", "fromage": "Tomme blanche", "desserts": ["Gâteau aux fruits rouges"]}]}, {"periode": "Menu du Lundi 27 Juillet au Vendredi 31 Juillet 2026", "start": "2026-07-27", "end": "2026-07-31", "jours": [{"date": "2026-07-27", "jour": "Lundi 27 juillet", "theme": "Végétarien", "entrees": ["Carottes râpées, vinaigrette à l'ail"], "plat": "Gratin de gnocchis de pommes de terre, duo de courgettes et chèvre", "accompagnement": "/", "fromage": "Mimolette", "desserts": ["Melon"]}, {"date": "2026-07-28", "jour": "Mardi 28 juillet", "entrees": ["Radis rose"], "plat": "Poisson beurre blanc", "accompagnement": "Épinards à la vache qui rit", "fromage": "Camembert", "desserts": ["Fruit de saison"]}, {"date": "2026-07-29", "jour": "Mercredi 29 juillet", "entrees": ["Pastèque"], "plat": "Rôti de dinde froid, mayonnaise", "accompagnement": "Salade de riz bio, tomates et maïs", "fromage": "Tomme noire IGP", "desserts": ["Crème dessert vanille"]}, {"date": "2026-07-30", "jour": "Jeudi 30 juillet", "entrees": ["Tomate vinaigrette"], "plat": "Hamburger", "accompagnement": "Pommes noisettes", "fromage": "Cheddar", "desserts": ["Milkshake banane bio et chocolat"]}, {"date": "2026-07-31", "jour": "Vendredi 31 juillet", "entrees": ["Melon"], "plat": "Saucisses", "accompagnement": "Purée de pommes de terre", "fromage": "Verre de lait bio", "desserts": ["Cake aux pêches"]}]}, {"periode": "Menu du Lundi 3 Août au Vendredi 7 Août 2026", "start": "2026-08-03", "end": "2026-08-07", "jours": [{"date": "2026-08-03", "jour": "Lundi 3 août", "entrees": ["Betteraves bio, vinaigrette à la moutarde à l'ancienne"], "plat": "Salade de riz bio au thon", "accompagnement": "/", "fromage": "Fromage blanc local", "desserts": ["Melon"]}, {"date": "2026-08-04", "jour": "Mardi 4 août", "entrees": ["Pastèque"], "plat": "Haché de poulet", "accompagnement": "Carottes bio", "fromage": "Vache qui rit", "desserts": ["Fruit de saison"]}, {"date": "2026-08-05", "jour": "Mercredi 5 août", "theme": "Végétarien", "entrees": ["Concombre, vinaigrette au fromage ail et fines herbes"], "plat": "Nuggets de blé", "accompagnement": "Pennes bio sauce tomate", "fromage": "Emmental", "desserts": ["Compote fraîche pomme bio framboise"]}, {"date": "2026-08-06", "jour": "Jeudi 6 août", "entrees": ["Crêpe au fromage"], "plat": "Haut de cuisse de poulet et ketchup", "accompagnement": "Haricots verts bio persillés", "fromage": "Gouda bio", "desserts": ["Fruit de saison"]}, {"date": "2026-08-07", "jour": "Vendredi 7 août", "entrees": ["Tomates, vinaigrette à l'huile d'olive"], "plat": "Morceaux de colin d'Alaska MSC au four", "accompagnement": "Courgettes", "fromage": "Tomme noire IGP", "desserts": ["Semoule au lait"]}]}, {"periode": "Menu du Lundi 10 Août au Vendredi 14 Août 2026", "start": "2026-08-10", "end": "2026-08-14", "jours": [{"date": "2026-08-10", "jour": "Lundi 10 août", "entrees": ["Carottes râpées, vinaigrette à la coriandre"], "plat": "Jambon blanc", "accompagnement": "Purée du chef", "fromage": "Mimolette", "desserts": ["Compote pommes bio"]}, {"date": "2026-08-11", "jour": "Mardi 11 août", "entrees": ["Salade de tomates et feta"], "plat": "Kebab à l'émincé végétal, sauce fromage blanc", "accompagnement": "Pommes de terre grenailles", "fromage": "Fromage blanc au miel", "desserts": ["Pastèque"]}, {"date": "2026-08-12", "jour": "Mercredi 12 août", "entrees": ["Taboulé estival (semoule bio)"], "plat": "Poisson blanc MSC meunière", "accompagnement": "Ratatouille", "fromage": "Cantal AOP", "desserts": ["Fruit de saison"]}, {"date": "2026-08-13", "jour": "Jeudi 13 août", "entrees": ["Melon"], "plat": "Pilon de poulet", "accompagnement": "Salade de blé", "fromage": "Edam", "desserts": ["Fruit de saison bio"]}, {"date": "2026-08-14", "jour": "Vendredi 14 août", "entrees": ["Œuf dur mayonnaise"], "plat": "Sauté de dinde curry courgettes", "accompagnement": "Pennes HVE", "fromage": "Suisse sucré", "desserts": ["Cake à la framboise"]}]}, {"periode": "Menu du Lundi 17 Août au Vendredi 21 Août 2026", "start": "2026-08-17", "end": "2026-08-21", "jours": [{"date": "2026-08-17", "jour": "Lundi 17 août", "entrees": ["Melon jaune"], "plat": "Rôti de dinde sauce piperade", "accompagnement": "Blé pilaf", "fromage": "Camembert", "desserts": ["Flan au chocolat"]}, {"date": "2026-08-18", "jour": "Mardi 18 août", "theme": "Végétarien", "entrees": ["Salade de pommes de terre, maïs et vinaigrette au ketchup"], "plat": "Quiche aux légumes du soleil", "accompagnement": "Salade verte", "fromage": "Yaourt aromatisé", "desserts": ["Fruit de saison"]}, {"date": "2026-08-19", "jour": "Mercredi 19 août", "entrees": ["Concombre, sauce vinaigrette au fromage blanc et ciboulette"], "plat": "Rôti de porc sauce aux olives", "accompagnement": "Semoule bio", "fromage": "Gouda bio", "desserts": ["Fruit de saison"]}, {"date": "2026-08-20", "jour": "Jeudi 20 août", "entrees": ["Mélange de coquillettes bio, tomates, maïs et vinaigrette"], "plat": "Cordon bleu de dinde", "accompagnement": "Ratatouille", "fromage": "Chèvre", "desserts": ["Fruit de saison"]}, {"date": "2026-08-21", "jour": "Vendredi 21 août", "entrees": ["Tomates, vinaigrette caesar"], "plat": "Filet de limande MSC sauce paprika", "accompagnement": "Riz IGP de Camargue", "fromage": "Tomme blanche", "desserts": ["Gâteau aux fruits rouges"]}]}, {"periode": "Menu du Lundi 24 Août au Vendredi 28 Août 2026", "start": "2026-08-24", "end": "2026-08-28", "jours": [{"date": "2026-08-24", "jour": "Lundi 24 août", "entrees": [], "plat": "", "accompagnement": "", "fromage": "", "desserts": []}, {"date": "2026-08-25", "jour": "Mardi 25 août", "entrees": [], "plat": "", "accompagnement": "", "fromage": "", "desserts": []}, {"date": "2026-08-26", "jour": "Mercredi 26 août", "entrees": [], "plat": "", "accompagnement": "", "fromage": "", "desserts": []}, {"date": "2026-08-27", "jour": "Jeudi 27 août", "entrees": [], "plat": "", "accompagnement": "", "fromage": "", "desserts": []}, {"date": "2026-08-28", "jour": "Vendredi 28 août", "entrees": [], "plat": "", "accompagnement": "", "fromage": "", "desserts": []}]}];
+
+function parseLocalDate(value) {
+  const [y,m,d] = value.split("-").map(Number);
+  return new Date(y, m-1, d);
+}
+
+function formatDateISO(date) {
+  return date.getFullYear() + "-" + String(date.getMonth()+1).padStart(2,"0") + "-" + String(date.getDate()).padStart(2,"0");
+}
+
+function isWithin(date, start, end) {
+  const d = parseLocalDate(date), s = parseLocalDate(start), e = parseLocalDate(end);
+  return d >= s && d <= e;
+}
+
+function renderMenus(selectedDate, showAll=false) {
+  const container = document.getElementById("menus");
+  container.innerHTML = "";
+  const todayISO = formatDateISO(new Date());
+  let foundDay = null;
+  let foundWeek = null;
+
+  menus.forEach((week, wi) => {
+    const weekEl = document.createElement("section");
+    weekEl.className = "week";
+    weekEl.dataset.start = week.start;
+    weekEl.dataset.end = week.end;
+    if (!showAll && !isWithin(selectedDate, week.start, week.end)) {
+      weekEl.classList.add("hidden");
+    }
+
+    const title = document.createElement("h2");
+    title.textContent = week.periode;
+    weekEl.appendChild(title);
+
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    week.jours.forEach(day => {
+      const card = document.createElement("article");
+      card.className = "day";
+      if (day.date === todayISO) card.classList.add("today");
+      if (day.date === selectedDate) {
+        card.classList.add("selected");
+        foundDay = day;
+        foundWeek = week;
+      }
+
+      card.innerHTML = `
+        <h3>${day.jour}</h3>
+        ${day.theme ? `<div class="badge">${day.theme}</div>` : ""}
+        <div class="section-title">Entrée(s)</div>
+        ${day.entrees.length ? `<ul>${day.entrees.map(x=>`<li>${x}</li>`).join("")}</ul>` : `<p>—</p>`}
+        <div class="section-title">Plat</div>
+        <p>${day.plat || "—"}</p>
+        <div class="section-title">Accompagnement</div>
+        <p>${day.accompagnement || "—"}</p>
+        <div class="section-title">Fromage / laitage</div>
+        <p>${day.fromage || "—"}</p>
+        <div class="section-title">Dessert(s)</div>
+        ${day.desserts.length ? `<ul>${day.desserts.map(x=>`<li>${x}</li>`).join("")}</ul>` : `<p>—</p>`}
+      `;
+      grid.appendChild(card);
+    });
+
+    weekEl.appendChild(grid);
+    container.appendChild(weekEl);
+  });
+
+  const summary = document.getElementById("summary");
+  if (foundDay) {
+    summary.innerHTML = `<strong>Menu affiché par défaut :</strong> <mark>${foundDay.jour}</mark><br>
+    Semaine : ${foundWeek.periode}`;
+  } else {
+    summary.innerHTML = `<strong>Aucun menu trouvé pour la date sélectionnée.</strong><br>
+    Les menus couvrent la période du 20 avril au 28 août 2026.`;
+  }
+}
+
+const menuToggle = document.getElementById("menuToggle");
+const menuPanel = document.getElementById("menuPanel");
+
+menuToggle.addEventListener("click", () => {
+  const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+  menuToggle.setAttribute("aria-expanded", String(!isOpen));
+  menuPanel.hidden = isOpen;
+});
+
+const datePicker = document.getElementById("datePicker");
+datePicker.value = formatDateISO(new Date());
+renderMenus(datePicker.value);
+
+function currentWeekIndex(selectedDate) {
+  const exact = menus.findIndex(week => isWithin(selectedDate, week.start, week.end));
+  if (exact !== -1) return exact;
+
+  const selected = parseLocalDate(selectedDate);
+  for (let i = 0; i < menus.length; i++) {
+    if (selected < parseLocalDate(menus[i].start)) return i;
+  }
+  return menus.length - 1;
+}
+
+function goToWeek(direction) {
+  const index = currentWeekIndex(datePicker.value);
+  const nextIndex = Math.min(Math.max(index + direction, 0), menus.length - 1);
+  datePicker.value = menus[nextIndex].start;
+  renderMenus(datePicker.value);
+}
+
+datePicker.addEventListener("change", () => renderMenus(datePicker.value));
+
+document.getElementById("prevWeekBtn").addEventListener("click", () => goToWeek(-1));
+
+document.getElementById("nextWeekBtn").addEventListener("click", () => goToWeek(1));
+
+document.getElementById("todayBtn").addEventListener("click", () => {
+  datePicker.value = formatDateISO(new Date());
+  renderMenus(datePicker.value);
+});
+
+document.getElementById("allBtn").addEventListener("click", () => renderMenus(datePicker.value, true));
+</script>
+</body>
+</html>
